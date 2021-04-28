@@ -42,6 +42,21 @@ The function itself must be named `transform`. Replicator will call it with the 
 
 The function must return an object, which contains `stream`, `eventType`, `data` and `metadata` fields. Both `data` and `metadata` must be valid objects, the `metadata` field can be `undefined`. If you haven't changed the event data, you can pass `data` and `metadata` arguments, which the function receives as arguments.
 
+## Logging
+
+You can log from JavaScript code directly to Replicator logs. Use the `log` object with `debug`, `info`, `warn` and `error`. You can use string interpolation as usual, or pass templated strings in [Serilog format](https://github.com/serilog/serilog/wiki/Writing-Log-Events). The first parameter is the template string, plus you can pass up to five additional values, which could be values or objects.
+
+For example:
+
+```javascript
+log.info(
+    "Transforming event {@Data} of type {Type}", 
+    original.data, original.eventType
+);
+```
+
+Remember that the default log level is `Information`, so debug logs won't be shown. Enable debug-level logging by setting the `REPLICATOR_DEBUG` environment variable to `true`.
+
 ## Example
 
 Here is an example of a transformation function, which changes the event data, stream name, and event type:

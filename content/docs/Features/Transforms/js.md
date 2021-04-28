@@ -74,8 +74,11 @@ function transform(original) {
 
     // Create a new event version
     const newEvent = {
+        // Copy original data
         ...original.data,
+        // Change an existing property value 
         Data1: `new${original.data.Data1}`,
+        // Add a new property
         NewProp: `${original.data.Id} - ${original.data.Data2}`
     };
     

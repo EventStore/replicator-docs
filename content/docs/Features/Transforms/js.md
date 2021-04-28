@@ -63,16 +63,28 @@ Here is an example of a transformation function, which changes the event data, s
 
 ```js
 function transform(original) {
+    // Log the transform calls
+    log.info(
+        "Transforming event {Type} from {Stream}", 
+        original.eventType, original.stream
+    );
+
+    // Ignore some events
+    if (original.stream.length > 7) return undefined;
+
+    // Create a new event version
     const newEvent = {
-        ...original.data.event,
+        ...original.data,
         Data1: `new${original.data.Data1}`,
         NewProp: `${original.data.Id} - ${original.data.Data2}`
     };
+    
+    // Return the new proposed event with modified stream and type
     return {
-        stream: `transformed${stream}`,
-        eventType: `V2.${eventType}`,
+        stream: `transformed${original.stream}`,
+        eventType: `V2.${original.eventType}`,
         data: newEvent,
-        meta
+        meta: original.meta
     }
 }
 ```

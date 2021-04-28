@@ -69,9 +69,10 @@ Available options are:
 | `resources.limits.memory` | Memory limit | `1Gi` |
 | `pvc.storageClass` | Persistent volume storage class name | `null` |
 
-**Note:**
+{{< alert title="Note:" >}}
 - As Replicator uses 20.10 TCP client, you have to specify `UseSsl=false` in the connection string when connecting to an insecure cluster or instance.
 - Only increase the partitions count if you don't care about the `$all` stream order (regular streams will be in order anyway)
+{{< /alert >}}
 
 You should at least provide both connection strings and ensure that workloads in your Kubernetes cluster can reach both the source and the target EventStoreDB clusters or instances.
 

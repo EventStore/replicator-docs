@@ -17,4 +17,6 @@ To mitigate the issue, Replication will add the following metadata to all the co
 - `$originalEventNumber`
 - `$originalEventPosition`
 
-Note: Replicator can only add metadata to events, which don't have metadata, or have metadata in JSON format.
+{{< alert title="Note:" >}}
+Replicator can only add metadata to events, which don't have metadata, or have metadata in JSON format.
+{{< /alert >}}

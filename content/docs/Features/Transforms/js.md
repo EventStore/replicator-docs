@@ -11,6 +11,10 @@ description: >
 
 When you need to perform simple changes in the event schema, change the stream name or event type based on the existing event details and data, you can use a JavaScript transform.
 
+{{< alert title="Warning:" >}}
+JavaScript transforms only work with JSON payloads.
+{{< /alert >}}
+
 For this transform, you need to supply a code snippet, written in JavaScript, which does the transformation. The code snippet must be placed in a separate file, and it cannot have any external dependencies. There's no limitation on how complex the code is. Replicator uses the V8 engine to execute JavaScript code. Therefore, this transform normally doesn't create a lot of overhead for the replication.
 
 ## Guidelines
@@ -33,32 +37,29 @@ The function itself must be named `transform`. Replicator will call it with the 
 
 - `stream` - original stream name
 - `eventType` - original event type
-- `data` - event payload as UTF8 string
-- `metadata` - event metadata as UTF8 string
+- `data` - event payload as an object
+- `metadata` - event metadata as an object
 
-If your events are serialized in JSON, you can use `JSON.parse` to deserialize the payload or metadata.
-
-The function must return an object, which contains `stream`, `eventType`, `data` and `metadata` fields. Both `data` and `metadata` must be strings. For JSON payloads, you can use `JSON.stringify` to serialise your objects. If you haven't changed the event data, you can pass `data` and `metadata` arguments, which the function receives as arguments.
+The function must return an object, which contains `stream`, `eventType`, `data` and `metadata` fields. Both `data` and `metadata` must be valid objects, the `metadata` field can be `undefined`. If you haven't changed the event data, you can pass `data` and `metadata` arguments, which the function receives as arguments.
 
 ## Example
 
 Here is an example of a transformation function, which changes the event data, stream name, and event type:
 
 ```js
-function transform(stream, eventType, data, meta) {
-    const event = JSON.parse(data);
+function transform(original) {
     const newEvent = {
-        ...event,
-        Data1: `new${event.Data1}`,
-        NewProp: `${event.Id} - ${event.Data2}`
+        ...original.data.event,
+        Data1: `new${original.data.Data1}`,
+        NewProp: `${original.data.Id} - ${original.data.Data2}`
     };
     return {
         stream: `transformed${stream}`,
         eventType: `V2.${eventType}`,
-        data: JSON.stringify(newEvent),
+        data: newEvent,
         meta
     }
 }
 ```
 
-If the function returns `null`, the event will not be replicated, so the JavaScript transform can also be used as an advanced filter.
+If the function returns `undefined`, the event will not be replicated, so the JavaScript transform can also be used as an advanced filter. The same happens if the transform function returns an event, but either the stream name or event type is empty or `undefined`.

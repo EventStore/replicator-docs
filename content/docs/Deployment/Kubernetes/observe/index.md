@@ -25,6 +25,6 @@ If you have Prometheus managed by Prometheus Operator, the scrape annotation won
 
 The best way to monitor the replication progress is using Prometheus and Grafana. If the pod is being properly scraped for metrics, you would be able to use the Grafana dashboard, which you can create by import it from [JSON file](grafana-dashboard.json).
 
-Watch out for the replication gap and ensure that it decreases.
+{{< alert >}}Watch out for the replication gap and ensure that it decreases.{{< /alert >}}
 
 ![Grafana dashboard](grafana.png)

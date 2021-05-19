@@ -58,9 +58,11 @@ Available options are:
 | `replicator.sink.connectionString` | Connection string for the target cluster or instance | nil |
 | `replicator.sink.protocol` | Writer protocol | `grpc` |
 | `replicator.sink.partitionCount` | Number of partitioned concurrent writers | `1` |
+| `replicator.sink.bufferSize` | Size of the sink buffer, in events | `1000` |
 | `replicator.scavenge` | Enable real-time [scavenge]({{% ref "scavenge" %}}) | `true` |
 | `replicator.filters` | Add one or more of provided [filters]({{% ref "filters" %}}) | `[]` |
 | `replicator.transform` | Configure the [event transformation]({{% ref "Transforms" %}}) |
+| `replicator.transform.bufferSize` | Size of the prepare buffer (filtering and transformations), in events | `1000` |
 | `prometheus.metrics` | Enable annotations for Prometheus | `false` |
 | `prometheus.operator` | Create `PodMonitor` custom resource for Prometheus Operator | `false` |
 | `resources.requests.cpu` | CPU request | `250m` |
@@ -68,6 +70,7 @@ Available options are:
 | `resources.limits.cpu` | CPU limit | `1` |
 | `resources.limits.memory` | Memory limit | `1Gi` |
 | `pvc.storageClass` | Persistent volume storage class name | `null` |
+| `terminationGracePeriodSeconds` | Timeout for the workload graceful shutdown, it must be long enough for the sink buffer to flush | `300` |
 
 {{< alert title="Note:" >}}
 - As Replicator uses 20.10 TCP client, you have to specify `UseSsl=false` in the connection string when connecting to an insecure cluster or instance.

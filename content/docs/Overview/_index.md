@@ -17,7 +17,7 @@ Common replication scenarios include:
 
 * **Cloud migration**: When migrating from a self-hosted cluster to Event Store Cloud, you might want to take the data with you. Replicator can help you with that, but it has some limitations on how fast it can copy the historical data.
 
-* **Store migration**: Migrating the whole store when your event schema changes severely, or you need to get rid of some obsolete data, you can do it using Replicator too. You can transform events from one contract to another, and filter out obsolete events. It allows you also to overcome the limitation of not being able to delete events in the middle of the stream.
+* **Store migration**: Migrating the whole store when your event schema changes severely, or you need to get rid of some obsolete data, you can do it using Replicator too. You can transform events from one contract to another, and filter out obsolete events. It allows you also to overcome the limitation of not being able to delete events in the middle of the stream. Greg Young promotes a complete store migration with transformation as part of the release cycle, to avoid event versioning issues. You can, for example, [listen about it here](https://youtu.be/FKFu78ZEIi8?t=856).
 
 * **Backup**: You can also replicate data between two clusters, so in case of catastrophic failure, you will have a working cluster with recent data.
 
@@ -27,6 +27,6 @@ Common replication scenarios include:
 
 Give your users next steps from the Overview. For example:
 
-* [Features](/docs/features/): Check out Replicator features
-* [Limitations](/docs/limitations/): Make sure you understand the tool limitations
+* [Features]({{< ref "features" >}}): Check out Replicator features
+* [Limitations]({{< ref "limitations" >}}): Make sure you understand the tool limitations
 

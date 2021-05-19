@@ -21,9 +21,15 @@ Available configuration options are:
 | `replicator.sink.connectionString` | Connection string for the target cluster or instance |
 | `replicator.sink.protocol` | Writer protocol (`tcp` or `grpc`) |
 | `replicator.sink.partitionCount` | Number of partitioned concurrent writers |
+| `replicator.sink.bufferSize` | Size of the sink buffer, `1000` events by default |
 | `replicator.scavenge` | Enable real-time scavenge |
 | `replicator.filters` | Add one or more of provided [filters]({{% ref "filters" %}}) |
 | `replicator.transform` | Configure the [event transformation]({{% ref "Transforms" %}}) |
+| `replicator.transform.bufferSize` | Size of the prepare buffer (filtering and transformations), `1000` events by default |
+
+## Enable verbose logging
+
+You can enable debug-level logging by setting the `REPLICATOR_DEBUG` environment variable to any value.
 
 ## Example configuration
 

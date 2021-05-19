@@ -35,12 +35,12 @@ replicator:
 
 The function itself must be named `transform`. Replicator will call it with the following arguments:
 
-- `stream` - original stream name
-- `eventType` - original event type
-- `data` - event payload as an object
-- `metadata` - event metadata as an object
+- `Stream` - original stream name
+- `EventType` - original event type
+- `Data` - event payload as an object
+- `Metadata` - event metadata as an object
 
-The function must return an object, which contains `stream`, `eventType`, `data` and `metadata` fields. Both `data` and `metadata` must be valid objects, the `metadata` field can be `undefined`. If you haven't changed the event data, you can pass `data` and `metadata` arguments, which the function receives as arguments.
+The function must return an object, which contains `Stream`, `EventType`, `Data` and `Metadata` fields. Both `Data` and `Metadata` must be valid objects, the `Metadata` field can be `undefined`. If you haven't changed the event data, you can pass `Data` and `Metadata` arguments, which the function receives as arguments.
 
 ## Logging
 
@@ -66,28 +66,28 @@ function transform(original) {
     // Log the transform calls
     log.info(
         "Transforming event {Type} from {Stream}", 
-        original.eventType, original.stream
+        original.EventType, original.Stream
     );
 
     // Ignore some events
-    if (original.stream.length > 7) return undefined;
+    if (original.Stream.length > 7) return undefined;
 
     // Create a new event version
     const newEvent = {
         // Copy original data
-        ...original.data,
+        ...original.Data,
         // Change an existing property value 
-        Data1: `new${original.data.Data1}`,
+        Data1: `new${original.Data.Data1}`,
         // Add a new property
-        NewProp: `${original.data.Id} - ${original.data.Data2}`
+        NewProp: `${original.Data.Id} - ${original.Data.Data2}`
     };
     
     // Return the new proposed event with modified stream and type
     return {
-        stream: `transformed${original.stream}`,
-        eventType: `V2.${original.eventType}`,
-        data: newEvent,
-        meta: original.meta
+        Stream: `transformed${original.Stream}`,
+        EventType: `V2.${original.EventType}`,
+        Data: newEvent,
+        Meta: original.Meta
     }
 }
 ```

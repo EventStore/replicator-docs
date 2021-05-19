@@ -27,6 +27,8 @@ $ helm repo add es-replicator https://eventstore.github.io/replicator
 $ helm repo update
 ```
 
+## Provide configuration
+
 Configure the Replicator options using a new `values.yml` file:
 
 ```yaml
@@ -71,6 +73,7 @@ Available options are:
 | `resources.limits.memory` | Memory limit | `1Gi` |
 | `pvc.storageClass` | Persistent volume storage class name | `null` |
 | `terminationGracePeriodSeconds` | Timeout for the workload graceful shutdown, it must be long enough for the sink buffer to flush | `300` |
+| `jsConfigMaps` | List of existing config maps to be used as JS code files (for JS transform, for example) | `{}` |
 
 {{< alert title="Note:" >}}
 - As Replicator uses 20.10 TCP client, you have to specify `UseSsl=false` in the connection string when connecting to an insecure cluster or instance.
@@ -82,6 +85,8 @@ You should at least provide both connection strings and ensure that workloads in
 {{% alert %}}
 Read also about [monitoring]({{% ref "observe" %}}) the replicator process in Kubernetes.
 {{%/ alert %}}
+
+## Complete the deployment
 
 When you have the `values.yml` file complete, deploy the release using Helm. Remember to set the current `kubectl` context to the cluster where you are deploying to.
 
@@ -96,3 +101,32 @@ The replication starts immediately after the deployment, assuming that all the c
 {{% alert color="warning" %}}
 The checkpoint is stored on a persistent volume, which is provisioned as part of the Helm release. If you delete the release, the volume will be deleted by the cloud provider, and the checkpoint will be gone. If you deploy the tool again, it will start from the beginning of the `$all` stream and will produce duplicate events.
 {{%/ alert %}}
+
+## Configuring JS transform
+
+If you want to use a [JavaScript transform](/docs/features/transforms/js/), you need to add a config map to the Replicator namespace before doing the Helm deployment. You'd need one config map, which contains the JavaScript code file for the transform function. The config map should contain the JS code as data:
+
+```bash
+kubectl create configmap transform --from-file=transform.js -n <replicator namespace>
+```
+
+Then, use the `jsConfigMaps` option in the `values.yml` file to provision volume and volume mount for the JS file:
+
+```yaml
+jsConfigMaps:
+  - configMapName: transform
+    fileName: transform.js
+```
+
+The config map data will be mapped as a volume to the `js` directory of the application root directory inside the pod.
+
+Finally, configure the JS transform in the values override file:
+
+```yaml
+replicator:
+  transform:
+    type: js
+    config: ./js/transform.js
+```
+
+Finally, proceed with the deployment as normal.

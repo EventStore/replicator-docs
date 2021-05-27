@@ -1,10 +1,10 @@
 ---
-title: "Write modes"
-linkTitle: "Write modes"
-date: 2021-04-05
-weight: 5
+title: "Sink Partitioning"
+linkTitle: "Sink Partitioning"
+date: 2021-05-27
+weight: 20
 description: >
-    Different write modes to support string ordering guarantee for `$all`, or relax it for better performance.
+    Increase the speed of writes by enabling partitioned sinks.
 ---
 
 ## Write modes

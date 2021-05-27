@@ -43,8 +43,8 @@ replicator:
       include: "."
       exclude: "((Bad|Wrong)\w+Event)"
   transform:
-    - type: http
-      config: "http://transform.somenamespace.svc:5000"
+    type: http
+    config: "http://transform.somenamespace.svc:5000"
 prometheus:
   metrics: true
   operator: true

@@ -59,9 +59,11 @@ Available options are:
 | `replicator.reader.pageSize` | Reader page size (only applicable for TCP protocol | `4096` |
 | `replicator.sink.connectionString` | Connection string for the target cluster or instance | nil |
 | `replicator.sink.protocol` | Writer protocol | `grpc` |
-| `replicator.sink.partitionCount` | Number of partitioned concurrent writers | `1` |
+| `replicator.sink.partitionCount` | Number of [partitioned]({{% ref "writers" %}}) concurrent writers | `1` |
+| `replicator.sink.partitioner` | Custom JavaScript [partitioner]({{% ref "writers" %}}) | `null` |
 | `replicator.sink.bufferSize` | Size of the sink buffer, in events | `1000` |
 | `replicator.scavenge` | Enable real-time [scavenge]({{% ref "scavenge" %}}) | `true` |
+| `replicator.runContinuously` | Set to `false` if you want Replicator to stop when it reaches the end of `$all` stream. | `true` |
 | `replicator.filters` | Add one or more of provided [filters]({{% ref "filters" %}}) | `[]` |
 | `replicator.transform` | Configure the [event transformation]({{% ref "Transforms" %}}) |
 | `replicator.transform.bufferSize` | Size of the prepare buffer (filtering and transformations), in events | `1000` |
@@ -130,3 +132,11 @@ replicator:
 ```
 
 Finally, proceed with the deployment as normal.
+
+## Configure JS partitioning
+
+To use a custom [partitioner]({{% ref "writers" %}}), use the same steps described above for the custom transform to create a config map from the function source code file. 
+
+Add the config map name and the file name to the `jsConfigMaps` section of the values override file.
+
+Finally, set the `replicator.sink.partitioner` value to the file path (including the `./js/` directory).

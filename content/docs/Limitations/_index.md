@@ -31,5 +31,11 @@ Replicator can only add metadata to events, which don't have metadata, or have m
 
 Despite Replicator will copy all the stream metadata, the max age set on a stream won't work as expected. That's because all the events in the target cluster will get a new date. The `$originalCreatedDate` metadata field might help to mitigate the issue.
 
+## Replication of emitted streams
 
+By default, the Replicator replicates all emitted streams, which can lead to unintended consequences, including disruptions in target cluster projections. To resolve this:
+
+- **Apply Filters:** Use filters to specify which streams should and should not be replicated. Properly configured filters enable selective control over the replication of emitted streams, ensuring only necessary data is transferred between clusters or instances.
+  
+- **Delete and Restart:** If necessary, delete the emitted streams and restart the projection. Enabling the `track emitted events` option allows for resetting the projection, triggering the re-processing and rewriting of all emitted stream events.
 

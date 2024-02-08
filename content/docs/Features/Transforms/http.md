@@ -36,19 +36,27 @@ replicator:
 
 Replicator doesn't support any authentication, so the endpoint must be open and accessible. You can host it at the same place as Replicator itself to avoid the network latency, or elsewhere. For example, your transformation service can be running in the same Kubernetes cluster, so you can provide the internal DNS name to its service. Alternatively, you can use a serverless function.
 
-Replicator will call your endpoint using a `POST` request with JSON body. The request and response formats are the same:
+Replicator will call your endpoint using a `POST` request with JSON body.
+
+The request and response formats are the same:
 
 ```json
 {
     "eventType": "string",
     "streamName": "string",
+    "metadata": "string",
     "payload": "string"
 }
 ```
+Your HTTP transformation can modify any of these four properties.
 
-The `payload` field contains the binary event data payload as UTF8 string. If you use JSON in your events, you'll get a JSON string, which you can then deserialize.
+Both `metadata` and `payload` are UTF-8 encoded bytes as a string.
 
-You can change any field value when returning the result. Therefore, you have full control to change the event type, stream name and the payload. If your endpoint returns `204`, the event will be ignored, and we won't replicate it.
+If you store your events in JSON format, `payload` will be a JSON string that you can deserialize.
+
+`metadata` is always a JSON string.
+
+If your endpoint returns HTTP status code `204`, the event will be ignored and wont be replicated to the sink.
 
 ## Example
 
@@ -68,11 +76,16 @@ namespace HelloWorld {
 
             var payload = JsonSerializer
                 .Deserialize<TestEvent>(original.Payload);
-            payload.Data1 = $"Manipulated {payload.Data1}";
+            payload.EventProperty1 = $"Transformed {payload.EventProperty1}";
+
+            var metadata = JsonSerializer
+                .Deserialize<Metadata>(original.Metadata);
+            metadata.MetadataProperty1 = $"Transformed {metadata.MetadataProperty1}";
 
             var proposed = new HttpEvent {
-                StreamName = $"new-{original.StreamName}",
+                StreamName = $"transformed-{original.StreamName}",
                 EventType  = $"V2.{original.EventType}",
+                Metadata   = JsonSerializer.Serialize(metadata),
                 Payload    = JsonSerializer.Serialize(payload)
             };
 
@@ -83,14 +96,18 @@ namespace HelloWorld {
         class HttpEvent {
             public string EventType  { get; set; }
             public string StreamName { get; set; }
+            public string Metadata   { get; set; }
             public string Payload    { get; set; }
         }
 
+        class Metadata {
+            public string MetadataProperty1 { get; set; }
+            public string MetadataProperty2 { get; set; }
+        }
+
         class TestEvent {
-            public string Id    { get; set; }
-            public string Data1 { get; set; }
-            public string Data2 { get; set; }
-            public string Data3 { get; set; }
+            public string EventProperty1 { get; set; }
+            public string EventProperty2 { get; set; }
         }
     }
 }

@@ -48,13 +48,13 @@ The request and response formats are the same:
     "payload": "string"
 }
 ```
-
-- `eventType` - event type
-- `streamName` - stream name
-- `metadata` - event metadata as bytes
-- `payload` - event payload as bytes
-
 Your HTTP transformation can modify any of these four properties.
+
+Both `metadata` and `payload` are UTF-8 encoded bytes as a string.
+
+If you store your events in JSON format, `payload` will be a JSON string that you can deserialize.
+
+`metadata` is always a JSON string.
 
 If your endpoint returns HTTP status code `204`, the event will be ignored and wont be replicated to the sink.
 

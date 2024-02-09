@@ -22,7 +22,7 @@ For this transform, you need to supply a code snippet, written in JavaScript, wh
 You can configure Replicator to use a JavaScript transformation function using the following parameters:
 
 - `replicator.transform.type` - must be set to `js`
-- `replicator.transform.config` - name of the file, which contains the transformation function
+- `replicator.transform.file` - name of the file, which contains the transformation function
 
 For example:
 
@@ -30,7 +30,7 @@ For example:
 replicator:
   transform:
     type: js
-    config: ./transform.js
+    file: ./transform.js
 ```
 
 The function itself must be named `transform`. Replicator will call it with the following arguments:

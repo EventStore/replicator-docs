@@ -56,13 +56,14 @@ There are two modes for custom partitions, described below.
 
 As with the stream name partitioning, the custom partition key is hashed, and the hash of the key is used to decide which partition will take the event. This method allows having less partitions than there are keys.
 
-To use this mode you need to set the partition count using the `replicator.sink.partitionCount` setting, and also specify the file name of the partitioning function in the `replicator.sink.partitioner` setting. For example:
+To use this mode you need to set the partition count using the `replicator.sink.partitionCount` setting, and also specify the file name of the partitioning function in the `replicator.sink.partitioner.file` setting. For example:
 
 ```yaml
 replicator:
   sink:
     partitionCount: 10
-    partitioner: ./partitioner.js
+    partitioner:
+      file: ./partitioner.js
 ```
 
 ### Partition by value
@@ -71,7 +72,7 @@ In some cases, it's better to assign a single partition for each partition key. 
 
 To use value-based partitioning, use the same partitioning function signature. The difference is that for each returned partition key there will be a separate partition. For example, if the function deterministically return 10 different values, there will be 10 partitions. You don't need to configure the partition count, partitions will be dynamically created based on the number of unique keys.
 
-The settings file, therefore, only needs the `replicator.sink.partitioner` setting configured.
+The settings file, therefore, only needs the `replicator.sink.partitioner.file` setting configured.
 
 ## Partition count considerations
 

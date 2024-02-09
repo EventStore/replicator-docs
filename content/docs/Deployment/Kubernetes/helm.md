@@ -44,7 +44,7 @@ replicator:
       exclude: "((Bad|Wrong)\w+Event)"
   transform:
     type: http
-    config: "http://transform.somenamespace.svc:5000"
+    endpoint: "http://transform.somenamespace.svc:5000"
 prometheus:
   metrics: true
   operator: true
@@ -60,7 +60,7 @@ Available options are:
 | `replicator.sink.connectionString` | Connection string for the target cluster or instance | nil |
 | `replicator.sink.protocol` | Writer protocol | `grpc` |
 | `replicator.sink.partitionCount` | Number of [partitioned]({{% ref "writers" %}}) concurrent writers | `1` |
-| `replicator.sink.partitioner` | Custom JavaScript [partitioner]({{% ref "writers" %}}) | `null` |
+| `replicator.sink.partitioner.file` | Custom JavaScript [partitioner]({{% ref "writers" %}}) | `null` |
 | `replicator.sink.bufferSize` | Size of the sink buffer, in events | `1000` |
 | `replicator.scavenge` | Enable real-time [scavenge]({{% ref "scavenge" %}}) | `true` |
 | `replicator.runContinuously` | Set to `false` if you want Replicator to stop when it reaches the end of `$all` stream. | `true` |
@@ -75,7 +75,6 @@ Available options are:
 | `resources.limits.memory` | Memory limit | `1Gi` |
 | `pvc.storageClass` | Persistent volume storage class name | `null` |
 | `terminationGracePeriodSeconds` | Timeout for the workload graceful shutdown, it must be long enough for the sink buffer to flush | `300` |
-| `jsConfigMaps` | List of existing config maps to be used as JS code files (for JS transform, for example) | `{}` |
 
 {{< alert title="Note:" >}}
 - As Replicator uses 20.10 TCP client, you have to specify `UseSsl=false` in the connection string when connecting to an insecure cluster or instance.
@@ -88,12 +87,33 @@ You should at least provide both connection strings and ensure that workloads in
 Read also about [monitoring]({{% ref "observe" %}}) the replicator process in Kubernetes.
 {{%/ alert %}}
 
+## Configuring a JavaScript transform
+
+Follow the documentation to configure a [JavaScript transform](/docs/features/transforms/js/) in your `values.yml` file.
+
+Then append the following option to your `helm install` command:
+```bash
+--set-file replicator.transform.js=./transform.js
+```
+
+## Configuring a custom partitioner
+
+Follow the documentation to configure a custom [partitioner]({{% ref "writers" %}}) in your `values.yml` file.
+
+Then append the following option to your `helm install` command:
+```bash
+--set-file replicator.partitioner.js=./partitioner.js
+```
+
 ## Complete the deployment
 
 When you have the `values.yml` file complete, deploy the release using Helm. Remember to set the current `kubectl` context to the cluster where you are deploying to.
 
 ```bash
-$ helm install es-replicator es-replicator/es-replicator -f values.yml -n es-replicator
+helm install es-replicator \
+  es-replicator/es-replicator \
+  --values values.yml \
+  --namespace es-replicator
 ```
 
 You can choose another namespace, the namespace must exist before doing a deployment.
@@ -103,40 +123,3 @@ The replication starts immediately after the deployment, assuming that all the c
 {{% alert color="warning" %}}
 The checkpoint is stored on a persistent volume, which is provisioned as part of the Helm release. If you delete the release, the volume will be deleted by the cloud provider, and the checkpoint will be gone. If you deploy the tool again, it will start from the beginning of the `$all` stream and will produce duplicate events.
 {{%/ alert %}}
-
-## Configuring JS transform
-
-If you want to use a [JavaScript transform](/docs/features/transforms/js/), you need to add a config map to the Replicator namespace before doing the Helm deployment. You'd need one config map, which contains the JavaScript code file for the transform function. The config map should contain the JS code as data:
-
-```bash
-kubectl create configmap transform --from-file=transform.js -n <replicator namespace>
-```
-
-Then, use the `jsConfigMaps` option in the `values.yml` file to provision volume and volume mount for the JS file:
-
-```yaml
-jsConfigMaps:
-  - configMapName: transform
-    fileName: transform.js
-```
-
-The config map data will be mapped as a volume to the `js` directory of the application root directory inside the pod.
-
-Finally, configure the JS transform in the values override file:
-
-```yaml
-replicator:
-  transform:
-    type: js
-    config: ./js/transform.js
-```
-
-Finally, proceed with the deployment as normal.
-
-## Configure JS partitioning
-
-To use a custom [partitioner]({{% ref "writers" %}}), use the same steps described above for the custom transform to create a config map from the function source code file. 
-
-Add the config map name and the file name to the `jsConfigMaps` section of the values override file.
-
-Finally, set the `replicator.sink.partitioner` value to the file path (including the `./js/` directory).

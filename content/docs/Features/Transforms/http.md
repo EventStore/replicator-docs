@@ -23,7 +23,7 @@ Before using the HTTP transformation, you need to build and deploy the transform
 
 The transformation configuration has two parameters:
 - `replicator.transform.type` - should be `http` for HTTP transform
-- `replicator.transform.endpoint` - the HTTP(S) endpoint URL
+- `replicator.transform.config` - the HTTP(S) endpoint URL
 
 For example:
 
@@ -31,7 +31,7 @@ For example:
 replicator:
   transform:
     type: http
-    endpoint: http://transform-func.myapp.svc.cluster.local
+    config: http://transform-func.myapp.svc.cluster.local
 ```
 
 Replicator doesn't support any authentication, so the endpoint must be open and accessible. You can host it at the same place as Replicator itself to avoid the network latency, or elsewhere. For example, your transformation service can be running in the same Kubernetes cluster, so you can provide the internal DNS name to its service. Alternatively, you can use a serverless function.

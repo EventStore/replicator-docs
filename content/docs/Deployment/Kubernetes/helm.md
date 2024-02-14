@@ -44,7 +44,7 @@ replicator:
       exclude: "((Bad|Wrong)\w+Event)"
   transform:
     type: http
-    endpoint: "http://transform.somenamespace.svc:5000"
+    config: "http://transform.somenamespace.svc:5000"
 prometheus:
   metrics: true
   operator: true
@@ -60,7 +60,7 @@ Available options are:
 | `replicator.sink.connectionString` | Connection string for the target cluster or instance | nil |
 | `replicator.sink.protocol` | Writer protocol | `grpc` |
 | `replicator.sink.partitionCount` | Number of [partitioned]({{% ref "writers" %}}) concurrent writers | `1` |
-| `replicator.sink.partitioner.file` | Custom JavaScript [partitioner]({{% ref "writers" %}}) | `null` |
+| `replicator.sink.partitioner` | Custom JavaScript [partitioner]({{% ref "writers" %}}) | `null` |
 | `replicator.sink.bufferSize` | Size of the sink buffer, in events | `1000` |
 | `replicator.scavenge` | Enable real-time [scavenge]({{% ref "scavenge" %}}) | `true` |
 | `replicator.runContinuously` | Set to `false` if you want Replicator to stop when it reaches the end of `$all` stream. | `true` |
@@ -75,6 +75,7 @@ Available options are:
 | `resources.limits.memory` | Memory limit | `1Gi` |
 | `pvc.storageClass` | Persistent volume storage class name | `null` |
 | `terminationGracePeriodSeconds` | Timeout for the workload graceful shutdown, it must be long enough for the sink buffer to flush | `300` |
+| `jsConfigMaps` | List of existing config maps to be used as JS code files (for JS transform, for example) | `{}` |
 
 {{< alert title="Note:" >}}
 - As Replicator uses 20.10 TCP client, you have to specify `UseSsl=false` in the connection string when connecting to an insecure cluster or instance.
@@ -93,7 +94,7 @@ Follow the documentation to configure a [JavaScript transform](/docs/features/tr
 
 Then append the following option to your `helm install` command:
 ```bash
---set-file replicator.transform.js=./transform.js
+--set-file transformJs=./transform.js
 ```
 
 ## Configuring a custom partitioner
@@ -102,7 +103,7 @@ Follow the documentation to configure a custom [partitioner]({{% ref "writers" %
 
 Then append the following option to your `helm install` command:
 ```bash
---set-file replicator.partitioner.js=./partitioner.js
+--set-file partitionerJs=./partitioner.js
 ```
 
 ## Complete the deployment

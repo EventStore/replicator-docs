@@ -21,7 +21,7 @@ Available configuration options are:
 | `replicator.sink.connectionString` | Connection string for the target cluster or instance |
 | `replicator.sink.protocol` | Writer protocol (`tcp` or `grpc`) |
 | `replicator.sink.partitionCount` | Number of [partitioned]({{% ref "writers" %}}) concurrent writers |
-| `replicator.sink.partitioner.file` | Custom JavaScript [partitioner]({{% ref "writers" %}}) |
+| `replicator.sink.partitioner` | Custom JavaScript [partitioner]({{% ref "writers" %}}) |
 | `replicator.sink.bufferSize` | Size of the sink buffer, `1000` events by default |
 | `replicator.scavenge` | Enable real-time [scavenge]({{% ref "scavenge" %}}) |
 | `replicator.runContinuously` | Set to `false` if you want Replicator to stop when it reaches the end of `$all` stream. Default is `true`, so the replication continues until you stop it explicitly. |
@@ -53,7 +53,7 @@ replicator:
     partitionCount: 1
   transform:
     type: http
-    endpoint: https://my.acme.org/transform
+    config: https://my.acme.org/transform
   scavenge: false
   filters: []
   checkpoint:
